@@ -260,6 +260,170 @@ Teardown TestClass Called
 Pytest fixtures is feature, which is a powerful alternative to the xUnit style of setup/teardown functions, which utilizes dependency injection.
 
 - Test Fixtures allow for re-use of code across tests by specifying functions that should be executed before the unit test runs.
-- Specifying that a function is a Test Fixture is done by applying the pytest.fixture decorator to the function.
-- Individual unit tests can specify they wanna use that function by specifying it in their parameter list, or by using the `pytest.mark.usefixture` decorator.
+- Specifying that a function is a Test Fixture is done by applying the `pytest.fixture` decorator to the function.
+- Individual unit tests can specify they want to use that function by specifying it in their parameter list, or by using the `pytest.mark.usefixture` decorator.
 - The fixture can also set its autouse parameter to true, which will cause all tests in the fixture scope to automatically execute the fixture before the test executes.
+
+#### Test Fixture "Setup"
+
+Pytest Code:
+`In ./test_PyTestFixtureStyleEg1.py`
+
+```
+import pytest
+
+### SETUP FIXTURES ###
+
+@pytest.fixture
+def setup():
+    print("\n\nInitial Setup")
+
+### TESTS ###
+
+def test1(setup):
+    print("Executing test1")
+    assert True
+
+@pytest.mark.usefixtures("setup")
+def test2():
+    print("Executing test2")
+    assert True
+```
+
+> If you do not put 'setup' or '@pytest.mark.usefixtures("setup")' in test functions or methods, then the `setup()` fixture will not run.
+
+Pytest Output:
+
+```
+(venv) PythonTDDPractice1|⇒ pytest -v -s
+======== test session starts ========
+
+test_PyTestFixtureStyleEg1.py::test1
+
+Initial Setup
+Executing test1
+PASSED
+test_PyTestFixtureStyleEg1.py::test2
+
+Initial Setup
+Executing test2
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+It can be very useful for each individual test to be able to specify which test fixtures it needs executed before the test is run. But this can also be cumbersome for those cases where all the tests need to run the same test fixture. In this case, the `autouse `parameter of the test fixture can be set to `true`, and then the fixture will automatically be executed before each test that is in the fixture scope.
+
+`In ./test_PyTestFixtureStyleEg1.py`
+
+```
+### SETUP FIXTURES ###
+
+@pytest.fixture(autouse = true)
+def setup():
+    print("\nInitial Setup")
+
+### TESTS ###
+
+def test1():
+    print("Executing test1")
+    assert True
+
+def test2():
+    print("Executing test2")
+    assert True
+```
+
+#### Test Fixture "Teardown"
+
+Often, there is some type of teardown or cleanup that a test, class or module needs to perform after testing has been completed. Each Test Fixture can specify their own teardown code that should be executed. There are two methods of specifying a teardown code for a Test Fixture. The `yield` keyword, and the `request-context` object's `addfinalizer` method.
+
+`yield`: The `yield` keyword is the simpler of the two options for teardown code. The code after the yield statement is executed after the fixture goes out of scope. The yield keyword is a replacement for return, and any return values should be passed to it. The addfinalizer method of adding teardown code is a little more complicated, but also a little more capable than the yield statement.
+
+```
+@pytest.fixture()
+def setup():
+    print("Setup")
+    yield
+    print("Teardown!")
+```
+
+`addfinalizer`: With the `addfinalizer` method, one or more finalizer functions are added via the `request-context`'s addfinalizer method. **One of the big differences between this method and the `yield` keyword is that this method allows for multiple finalization functions to be specified.**
+
+```
+@pytest.fixture()
+def setup():
+    print("Setup")
+    def teardown():
+        print("Teardown!")
+    request.addfinalizer(teardown)
+```
+
+Example Code:
+
+`In ./test_PyTestFixtureStyleEg2.py`
+
+```
+
+import pytest
+
+### SETUP FIXTURES ###
+
+@pytest.fixture()
+def setup1():
+    print("\n\nSetup1")
+    yield
+    print("\nTeardown1!")
+
+@pytest.fixture()
+def setup2(request):
+    print("\nSetup2")
+
+    def teardown_a():
+        print("TeardownA!")
+
+    def teardown_b():
+        print("\nTeardownB!")
+
+    request.addfinalizer(teardown_a)
+    request.addfinalizer(teardown_b)
+
+### TESTS ###
+
+def test1(setup1):
+    print("Executing test1")
+    assert True
+
+def test2setup2(setup2):
+    print("Executing test2")
+    assert True
+
+```
+
+Pytest Output:
+
+```
+(venv) PythonTDDPractice1|⇒ pytest -v -s
+======== test session starts ========
+
+collected 2 items
+
+test_PyTestFixtureStyleEg2.py::test1
+
+Setup1 👈
+Executing test1
+PASSED
+Teardown1! 👈
+
+test_PyTestFixtureStyleEg2.py::test2setup2
+
+Setup2 👈
+Executing test2
+PASSED
+TeardownB! 👈
+TeardownA! 👈
+
+======== 2 passed in 0.01s =========
+```
+
+In the output from above pytest, we can see that the teardown code for `setup1` is called after `test1` finishes executing. And the two teardown functions for `setup2` are called after `test2` finishes.

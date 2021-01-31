@@ -27,6 +27,6 @@ def test1(setup1):
     print("Executing test1")
     assert True
 
-def test2setup2(setup2):
+def test2(setup2):
     print("Executing test2")
     assert True

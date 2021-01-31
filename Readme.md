@@ -81,6 +81,7 @@ Using these `setup` and `teardown functions` can help reduce code duplication by
 Now lets run this in pytest and see the output.
 
 Test Code:
+`In ./test_xUnitStyle.py`
 
 ```
 def setup_function(function):
@@ -142,7 +143,7 @@ Lets extend above example to include setup and teardown functions for the `modul
 
 Now update the code to include `setup module` and `teardown module` functions with print statements and then execute pytest again to see the updated results.
 
-Updated Pytest Code:
+Updated Example Code::
 
 ```
 def setup_module(module):
@@ -193,6 +194,7 @@ The `setup class` and `teardown class` **methods** have the `@classmethod` **dec
 - `Setup method` will be called before each unit test in the class is executed, and the `teardown method` will be executed after each unit test in the class has completed.
 
 Pytest Test Class Code:
+`In ./test_xUnitClassStyle.py`
 
 ```
 class TestClass:
@@ -266,7 +268,7 @@ Pytest fixtures is feature, which is a powerful alternative to the xUnit style o
 
 #### Test Fixture "Setup"
 
-Pytest Code:
+Example Code::
 `In ./test_PyTestFixtureStyleEg1.py`
 
 ```
@@ -314,6 +316,7 @@ PASSED
 
 It can be very useful for each individual test to be able to specify which test fixtures it needs executed before the test is run. But this can also be cumbersome for those cases where all the tests need to run the same test fixture. In this case, the `autouse `parameter of the test fixture can be set to `true`, and then the fixture will automatically be executed before each test that is in the fixture scope.
 
+Example Code:
 `In ./test_PyTestFixtureStyleEg1.py`
 
 ```
@@ -360,7 +363,6 @@ def setup():
 ```
 
 Example Code:
-
 `In ./test_PyTestFixtureStyleEg2.py`
 
 ```
@@ -427,3 +429,184 @@ TeardownA! 👈
 ```
 
 In the output from above pytest, we can see that the teardown code for `setup1` is called after `test1` finishes executing. And the two teardown functions for `setup2` are called after `test2` finishes.
+
+### Test Fixtures Scopes
+
+Which test a fixture applies to, and how often it is run, depends on the fixture scope. Test Fixtures have four different scopes that are possible.
+
+Test fixtures can have the following four different scopes which specify how often the fixture will be called:
+
+`Function scope`: By default, the scope is set to `Function`. And this specifies that the fixture should be called for all tests in the module.
+`Class scope`: specifies that the Test Fixture should be executed once per test class.
+`Module scope`: specifies that the fixture should be executed once per module.
+`Session scope`: specifies that the fixture should be executed once when `pytest` starts.
+
+**Example #1:**
+
+In this example, I've implemented two modules. In the first module, I have three different test fixtures, each at a different scope. Function fixture, Module fixture, and Session fixture. I've also implemented unit tests test1, and test2.
+
+`In ./test_PyTestFixtureStyleEg3a.py`
+
+```
+import pytest
+
+### SETUP FIXTURES ###
+
+@pytest.fixture(scope="session", autouse=True)
+def setupSession():
+    print("\nSetup Session")
+
+@pytest.fixture(scope="module", autouse=True)
+def setupModule():
+    print("Setup Module")
+
+@pytest.fixture(scope="function", autouse=True)
+def setupFunction():
+    print("\nSetup Function")
+
+### TESTS ###
+def test1():
+    print("Executing test1")
+    assert True
+
+def test2():
+    print("Executing test2")
+    assert True
+```
+
+**Pytest Output of Example #1:**
+
+```
+(venv) PythonTDDPractice1|⇒ pytest -v -s
+======== test session starts ========
+
+collected 4 items
+
+test_PyTestFixtureStyleEg3a.py::test1
+Setup Session
+Setup Module
+
+Setup Function
+Executing test1
+PASSED
+
+test_PyTestFixtureStyleEg3a.py::test2
+Setup Function
+Executing test2
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+The pytest output shows that the Session fixture runs first, and is run once. Then the Module fixture is run once for the first module, and then the Function fixture in the first module is run once for each test in the first module.
+
+**Example #2:**
+
+In the second module, I also have three different test fixtures at three different scopes. Function fixture, Class fixture, and Module fixture. And I've implemented a test class to unit test.
+
+`In ./test_PyTestFixtureStyleEg3b.py`
+
+```
+import pytest
+
+### SETUP FIXTURES ###
+
+@pytest.fixture(scope="function", autouse=True)
+def setupFunction2():
+    print("\nSetup Function2")
+
+@pytest.fixture(scope="class", autouse=True)
+def setupClass2():
+    print("\nSetup Class2")
+
+@pytest.fixture(scope="module", autouse=True)
+def setupModule2():
+    print("\nSetup Module2")
+
+### TESTS ###
+class TestClass:
+    def test1b(self):
+        print("Executing test1b")
+        assert True
+
+    def test2b(self):
+        print("Executing test2b")
+        assert True
+```
+
+**Pytest Output of Example #2:**
+
+```
+(venv) PythonTDDPractice1|⇒ pytest -v -s
+======== test session starts ========
+
+test_PyTestFixtureStyleEg3b.py::TestClass::test1b
+
+Setup Module2
+Setup Class2
+
+Setup Function2
+Executing test1b
+PASSED
+
+test_PyTestFixtureStyleEg3b.py::TestClass::test2b
+Setup Function2
+Executing test2b
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+The pytest output shows that the Module fixture is run first, and its run once. The Class fixture runs next, and then the Function fixture is run once before each of the test classes unit tests.
+
+### Test Fixture Return Objects and Params
+
+- Pytest fixtures allow you to optionally return `data` from the fixture that can be used in the test.
+- The optional `params` array argument in the fixture decorator can be used to specify one or more values that should be passed to the test.
+- When a `params` argument has multiple values, the test will be called once with each value.
+
+**Example Code:**
+`In ./test_PyTestFixtureStyleEg4.py`
+
+```
+import pytest
+
+### SETUP FIXTURES ###
+@pytest.fixture(params=[1,2,3])
+def _param(request):
+    retVal = request.param
+    print(f"\nSetup return val={retVal}")
+    return retVal
+
+### TESTS ###
+def test(_param):
+    print(f"Param from fixture={_param}")
+    assert True
+```
+
+**Pytest Output of Example code:**
+
+```
+(venv) PythonTDDPractice1|⇒ pytest -v -s
+======== test session starts ========
+collected 3 items
+
+test_PyTestFixtureStyleEg4.py::test[1]
+Setup return val=1
+Param from fixture=1
+PASSED
+
+test_PyTestFixtureStyleEg4.py::test[2]
+Setup return val=2
+Param from fixture=2
+PASSED
+
+test_PyTestFixtureStyleEg4.py::test[3]
+Setup return val=3
+Param from fixture=3
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+The pytest output shows that the test fixture and unit test are both run once for each value specified in the params list, as expected. The params feature can be a powerful and easy way to run your unit test with various values. **Care should be taken with this approach, though, as you generally still want to have different test cases and separate unit tests with unique names so that they can be easily identified when they fail.**

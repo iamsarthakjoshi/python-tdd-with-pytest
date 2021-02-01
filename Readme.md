@@ -80,7 +80,7 @@ Using these `setup` and `teardown functions` can help reduce code duplication by
 
 Now lets run this in pytest and see the output.
 
-Test Code:
+**Example Code:**
 `In ./test_xUnitStyle.py`
 
 ```
@@ -113,7 +113,7 @@ The pytest output shows that the setup function is called before test one execut
 
 The `teardown function` is called after test one executes and again after test two executes. Which unit test is being executed is passed in, so the setup and teardown code can easily be customized per unit test.
 
-Pytest result:
+**Pytest Output:**
 
 ```
 
@@ -143,7 +143,8 @@ Lets extend above example to include setup and teardown functions for the `modul
 
 Now update the code to include `setup module` and `teardown module` functions with print statements and then execute pytest again to see the updated results.
 
-Updated Example Code::
+**Updated Example Code:**
+`In ./test_xUnitStyle.py`
 
 ```
 def setup_module(module):
@@ -157,7 +158,7 @@ def teardown_module(module):
 
 The pytest output shows that now the `setup module function` is called once before any of the unit tests or the unit test `setup and teardown functions` are executed. And the `teardown module function` is called once after all the unit tests in the module and their `setup and teardown functions` have completed.
 
-Updated Pytest Outut:
+**Updated Pytest Output:**
 
 ```
 (venv) PythonTDDPractice1|⇒ pytest -v -s
@@ -193,7 +194,7 @@ The `setup class` and `teardown class` **methods** have the `@classmethod` **dec
 - The teardown class method will be executed by pytest after all of the unit tests in the class are executed.
 - `Setup method` will be called before each unit test in the class is executed, and the `teardown method` will be executed after each unit test in the class has completed.
 
-Pytest Test Class Code:
+**Pytest Test Class Code:**
 `In ./test_xUnitClassStyle.py`
 
 ```
@@ -234,7 +235,7 @@ class TestClass:
 
 Let's run this in `pytest` and see the results. The pytest output shows that the `setup class method` is called before anything else. Then `setup method` is called before `test one`, and `teardown method` is called after `test one` completes. Then `setup method` is called again before test two, and `teardown method` is called again after test two completes. Lastly, teardown class is called.
 
-Pytest TestClass Output:
+**Pytest TestClass Output:**
 
 ```
 collected 2 items
@@ -610,3 +611,70 @@ PASSED
 ```
 
 The pytest output shows that the test fixture and unit test are both run once for each value specified in the params list, as expected. The params feature can be a powerful and easy way to run your unit test with various values. **Care should be taken with this approach, though, as you generally still want to have different test cases and separate unit tests with unique names so that they can be easily identified when they fail.**
+
+## Assert and Testing Exceptions
+
+### Assert
+
+- Pytests allows the use of the built in Python assert statement for performing verifications in a unit test.
+- The normal comparison operators can be used on all Python data types. Less than `<`, greater than `>`, less than or equal `<=`, greater than or equal `>=`, equal `==` or non equal `!=`.
+- Pytests expands on the messages that are reported for assert failures to provide more context in the test results.
+
+**Eamples:**
+`In ./test_PyTestFixtureStyleEg5a.py`
+
+```
+def test_IntAssert():
+    assert 1 == 1
+
+def test_StrAssert():
+    assert "str" == "str"
+
+def test_FloatAssert():
+    assert "1.0" == "1.0"
+
+def test_arrayAssert():
+    assert [1,3,4] == [1,3,4]
+
+def test_dictAssert():
+    assert {"1":1} == {"1":1}
+```
+
+#### Comparing FLoating Point Values
+
+- Validating floating point values can sometimes be difficult, as internally the value is stored as a series of binary fractions (i.e. 1/3 is internally 0.333333333...). **Because of this, some comparisons that we'd expect to pass, will fail.**
+- Pytests provides the `approx` function, which will validate the two floating point values, or approximately the same value, as each other, to then a default tolerance of one times e to the negative six value.
+
+**Example:**
+`In ./test_PyTestFixtureStyleEg5a.py`
+
+```
+# Failing Test
+def test_BadFloatCompare():
+    assert (0.1 + 0.2) == 0.3
+
+# Passing Test
+from pytest import approx
+def test_BadFloatCompare():
+    assert (0.1 + 0.2) == approx(0.3)
+```
+
+### Verifing Exceptions
+
+- In some test cases, we need to verify that a function raises an exception under certain conditions.
+- Pytest provides the raises helper to perform this verification, using the `with` keyword.
+- When the raises helper is used, the unit test will fail, if the specified exception is not thrown in the code block, after the `raises` line.
+
+**Example:**
+`In ./test_PyTestFixtureStyleEg5b.py`
+
+```
+from pytest import raises
+
+def raisesValueException():
+    raise ValueError
+
+def test_Exception():
+    with raises(ValueError):
+        raisesValueException()
+```

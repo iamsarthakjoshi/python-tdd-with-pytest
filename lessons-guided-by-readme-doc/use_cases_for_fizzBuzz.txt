@@ -1,6 +1,6 @@
 '''
 Use cases:
-[ ] Can I call FizzBuzz.
+[.] Can I call FizzBuzz.
 [ ] Get "1" when I pass 1.
 [ ] Get "2" when I pass 2.
 [ ] Get "Fizz" when I pass 3.

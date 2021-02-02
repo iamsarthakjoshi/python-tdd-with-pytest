@@ -81,7 +81,7 @@ Using these `setup` and `teardown functions` can help reduce code duplication by
 Now lets run this in pytest and see the output.
 
 **Example Code:**
-`In ./test_xUnitStyle.py`
+`In ./lessons-guided-by-readme-doc/test_xUnitStyle.py`
 
 ```
 def setup_function(function):
@@ -144,7 +144,7 @@ Lets extend above example to include setup and teardown functions for the `modul
 Now update the code to include `setup module` and `teardown module` functions with print statements and then execute pytest again to see the updated results.
 
 **Updated Example Code:**
-`In ./test_xUnitStyle.py`
+`In ./lessons-guided-by-readme-doc/test_xUnitStyle.py`
 
 ```
 def setup_module(module):
@@ -195,7 +195,7 @@ The `setup class` and `teardown class` **methods** have the `@classmethod` **dec
 - `Setup method` will be called before each unit test in the class is executed, and the `teardown method` will be executed after each unit test in the class has completed.
 
 **Pytest Test Class Code:**
-`In ./test_xUnitClassStyle.py`
+`In ./lessons-guided-by-readme-doc/test_xUnitClassStyle.py`
 
 ```
 class TestClass:
@@ -270,7 +270,7 @@ Pytest fixtures is feature, which is a powerful alternative to the xUnit style o
 #### Test Fixture "Setup"
 
 Example Code::
-`In ./test_PyTestFixtureStyleEg1.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg1.py`
 
 ```
 import pytest
@@ -318,7 +318,7 @@ PASSED
 It can be very useful for each individual test to be able to specify which test fixtures it needs executed before the test is run. But this can also be cumbersome for those cases where all the tests need to run the same test fixture. In this case, the `autouse `parameter of the test fixture can be set to `true`, and then the fixture will automatically be executed before each test that is in the fixture scope.
 
 Example Code:
-`In ./test_PyTestFixtureStyleEg1.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg1.py`
 
 ```
 ### SETUP FIXTURES ###
@@ -364,7 +364,7 @@ def setup():
 ```
 
 Example Code:
-`In ./test_PyTestFixtureStyleEg2.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg2.py`
 
 ```
 
@@ -446,7 +446,7 @@ Test fixtures can have the following four different scopes which specify how oft
 
 In this example, I've implemented two modules. In the first module, I have three different test fixtures, each at a different scope. Function fixture, Module fixture, and Session fixture. I've also implemented unit tests test1, and test2.
 
-`In ./test_PyTestFixtureStyleEg3a.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg3a.py`
 
 ```
 import pytest
@@ -505,7 +505,7 @@ The pytest output shows that the Session fixture runs first, and is run once. Th
 
 In the second module, I also have three different test fixtures at three different scopes. Function fixture, Class fixture, and Module fixture. And I've implemented a test class to unit test.
 
-`In ./test_PyTestFixtureStyleEg3b.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg3b.py`
 
 ```
 import pytest
@@ -567,7 +567,7 @@ The pytest output shows that the Module fixture is run first, and its run once. 
 - When a `params` argument has multiple values, the test will be called once with each value.
 
 **Example Code:**
-`In ./test_PyTestFixtureStyleEg4.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg4.py`
 
 ```
 import pytest
@@ -621,7 +621,7 @@ The pytest output shows that the test fixture and unit test are both run once fo
 - Pytests expands on the messages that are reported for assert failures to provide more context in the test results.
 
 **Eamples:**
-`In ./test_PyTestFixtureStyleEg5a.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg5a.py`
 
 ```
 def test_IntAssert():
@@ -646,7 +646,7 @@ def test_dictAssert():
 - Pytests provides the `approx` function, which will validate the two floating point values, or approximately the same value, as each other, to then a default tolerance of one times e to the negative six value.
 
 **Example:**
-`In ./test_PyTestFixtureStyleEg5a.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg5a.py`
 
 ```
 # Failing Test
@@ -666,7 +666,7 @@ def test_BadFloatCompare():
 - When the raises helper is used, the unit test will fail, if the specified exception is not thrown in the code block, after the `raises` line.
 
 **Example:**
-`In ./test_PyTestFixtureStyleEg5b.py`
+`In ./lessons-guided-by-readme-doc/test_PyTestFixtureStyleEg5b.py`
 
 ```
 from pytest import raises
@@ -677,4 +677,195 @@ def raisesValueException():
 def test_Exception():
     with raises(ValueError):
         raisesValueException()
+```
+
+## PyTest Command Line Arguments
+
+- By default, PyTest runs all tests that it finds in the current working directory and sub-directory using the naming conventions for automatic test discovery.
+- There are several PyTest command line arguments that can be specified to try and be more selective about which tests will be executed.
+  - `moduleName`: You can simply pass in the `moduleName` to execute only the unit tests in that one particular module.
+  - `directoryName/`: You can also simply pass in a directory path to have PyTest run only the tests in that directory.
+  - `-k "expression"`: You can also use the `-k` option to specify an evaluation experssion in the string based on keywords such as the module name, the class name, and the function name. (e.g. "TestClass and TestFunction")
+  - `-m "expression"`: You can also use the `-m` option to specify that any tests that have a `@pytest.mark` decorator that matches the specified expression string will be executed.
+    - Marks can only be applied to tests, having no effect on fixtures.
+    - Unregistered marks applied with the @pytest.mark.name_of_the_mark decorator will always emit a warning in order to avoid silently doing something surprising due to mistyped names. You can disable the warning for custom marks by registering them in your `pytest.ini` file or using a custom `pytest_configure` hook. - [how-to-disable-warning-for-custom-marks](https://docs.pytest.org/en/stable/mark.html)
+
+### Additional command line arguments that can be very useful.
+
+- `-v`: The `-v` option specifies that verbose output from PyTest should be enabled.
+- `-q`: The `-q` option specifies the opposite. It specifies that the test should be run quietly, or with minimal output. This can be helpful from a performance perspective when you're running hundreds or thousands of tests.
+- `-s`: The `-s` option specifies that PyTest should not capture the console output, allowing you to see the printouts from the print, from the tests.
+- `--ignore`: The `--ignore` option allows you to specify a path that should be ignored during test discovery.
+- `--maxfail`: The `--maxfail` option specifies that PyTest should stop after _n_ number of test failures.
+
+**Examples:**
+
+We've got three test modules named:
+
+- test_file1.py, containing test1
+- test_file2.py, containing test2, and
+- test_file3.py, containing test3.
+
+Test_file3.py is in a sub-directory of the project named `testSubDirectory`.
+
+**Example of test files and test-sub-folder structure:**
+
+> These files are not present in this repo.
+
+```
+.
+├── testSubDirectory
+│   └── test_file3.py
+├── test_file1.py
+└── test_file2.py
+```
+
+`In testSubDirectory/test_file3.py`
+
+```
+def test3():
+    print("Test3")
+    assert True
+```
+
+`In test_file1.py`
+
+```
+def test1():
+    print("Test1")
+    assert True
+```
+
+`In test_file2.py`
+
+```
+def test2():
+    print("Test2")
+    assert True
+```
+
+- First we'll run PyTest with just the -v and -s arguments to verify that all the tests are discovered and run by PyTest.
+
+Command: `pytest -v -s`
+
+And we see that PyTest found the three tests and executed them.
+
+```
+======== test session starts ========
+
+collected 3 items
+
+test_file1.py::test1 Test1
+PASSED
+test_file2.py::test2 Test2
+PASSED
+testSubDirectory/test_file3.py::test3 Test3
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+- Now let's run just the tests in the `test_file1.py` file, by passing that `module name` in on the command line.
+
+Command: `pytest -v -s test_file1.py`
+
+And in the PyTest output, we can see that only `test1` has run.
+
+```
+======== test session starts ========
+
+test_file1.py::test1 Test1
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+- Next, I'll have just the tests found in the `testSubDirectory` executed by passing that directory in on the command line.
+
+Command: `pytest -v -s testSubDirectory`
+
+And we see that only test3 is executed.
+
+```
+======== test session starts ========
+
+testSubDirectory/test_file3.py::test3 Test3
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+- Now we'll execute just `test2` by using the `-k` or keyword argument, and specifying `test2` as the `keyword`.
+
+Command: `pytest -v -s -k "test2"`
+
+And we see that only `test2` was executed.
+
+```
+======== test session starts ========
+
+collected 3 items / 2 deselected / 1 selected
+
+test_file2.py::test2 Test2
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+- Now I'll expand that to run only tests 2 and 3 with an `or` statement in the keyword expression.
+
+Command: `pytest -v -s -k "test2 or test3"`
+
+And we see that `test2` and `test3` are run.
+
+```
+======== test session starts ========
+
+collected 3 items / 1 deselected / 2 selected
+
+test_file2.py::test2 Test2
+PASSED
+testSubDirectory/test_file3.py::test3 Test3
+PASSED
+
+======== 2 passed in 0.01s =========
+```
+
+Now we'll mark `test1` and `test3` using the PyTest `mark decorator`, and have PyTest run just those tests using the `-m` or mark expression.
+
+**Marking test1:**
+
+```
+import pytest
+
+@pytest.mark.test1
+def test1():
+    print("Test1")
+    assert True
+```
+
+**Marking test3:**
+
+```
+import pytest
+
+@pytest.mark.test3
+def test3():
+    print("Test3")
+    assert True
+```
+
+And we see just those tests are run.
+
+```
+======== test session starts ========
+
+collected 3 items / 1 deselected / 2 selected
+
+test_file1.py::test1 Test1
+PASSED
+testSubDirectory/test_file3.py::test3 Test3
+PASSED
+
+======== 2 passed in 0.01s =========
 ```

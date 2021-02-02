@@ -1,4 +1,5 @@
 __pycache__
 .vscode
+.pytest_cache
 venv
 Ex_Files_Unit_Testing_Dev_Python

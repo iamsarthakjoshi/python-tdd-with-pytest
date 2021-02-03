@@ -959,3 +959,11 @@ Example: `In ./practicing_unittest_mock/test_mock_features.py`
 - **Using a static code analysis tool regularly** on your code base is another core requirement for ensuring code quality.
   - Pylint is an excellent open source static analysis tool for Python that can be used for detecting bugs in your code (code that meets your team's coding standard - or the PEP8 standard by default).
   - It can also verify the code is formatted to the team standard, and it can even generate UML diagrams based on its analysis of the code.
+
+# Good books on TTD
+
+- Kent Beck - Test Driven Development: Bby Example (ISBN 978-0321146533)
+- Robert Martin - Clean Code: Handbook of Agile Software Craftsmanship (ISBN 978-0132350884)
+- Micheal Feathers - Working Effectively with Leagacy Code (ISBN 978-0131177055)
+
+Watch Robert Martin's "Clean Code" video series which is an excellent resource for how to write in general. (https://cleancoders.com/)
